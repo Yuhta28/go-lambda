@@ -30,3 +30,39 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+# AWS SAM
+.aws-sam/
+samconfig.toml
+
+# Lambda build artifacts
+bootstrap
+*.zip
+
+# AWS credentials and config (if accidentally placed in project)
+.aws/
+aws-credentials
+credentials
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+*.tmp
+*.temp
+*~
