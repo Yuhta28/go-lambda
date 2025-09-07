@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: >
-  db-connect-audit
+  postgresql-connect-audit
 
   Aurora PostgreSQL接続監視システム - CloudWatch LogsからSlackへの通知
 
@@ -30,12 +30,12 @@ Globals:
       - x86_64
 
 Resources:
-  DbConnectAuditFunction:
+  PostgresqlConnectAuditFunction:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: go1.x
     Properties:
-      CodeUri: db-connect-audit/
+      CodeUri: postgresql-connect-audit/
       Handler: bootstrap
       Runtime: provided.al2023
       Description: "Aurora PostgreSQL接続ログを監視してSlackに通知するLambda関数"
@@ -66,14 +66,14 @@ Resources:
               Resource: "*"
 
 Outputs:
-  DbConnectAuditFunction:
+  PostgresqlConnectAuditFunction:
     Description: "Aurora PostgreSQL接続監視Lambda関数のARN"
-    Value: !GetAtt DbConnectAuditFunction.Arn
+    Value: !GetAtt PostgresqlConnectAuditFunction.Arn
     Export:
-      Name: !Sub "${AWS::StackName}-DbConnectAuditFunction"
+      Name: !Sub "${AWS::StackName}-PostgresqlConnectAuditFunction"
 
-  DbConnectAuditFunctionIamRole:
+  PostgresqlConnectAuditFunctionIamRole:
     Description: "Lambda関数のIAMロール"
-    Value: !GetAtt DbConnectAuditFunctionRole.Arn
+    Value: !GetAtt PostgresqlConnectAuditFunctionRole.Arn
     Export:
-      Name: !Sub "${AWS::StackName}-DbConnectAuditFunctionRole"
+      Name: !Sub "${AWS::StackName}-PostgresqlConnectAuditFunctionRole"
