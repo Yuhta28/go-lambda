@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  mysql-connect-audit
+
+  Aurora MySQL接続監視システム - CloudWatch LogsからSlackへの通知
+
+Parameters:
+  SlackWebhookUrl:
+    Type: String
+    Description: Slack Webhook URL for notifications
+    NoEcho: true
+
+  AuroraClusterIdentifier:
+    Type: String
+    Description: Aurora MySQL cluster identifier
+    Default: "aurora-mysql-cluster"
+
+  CloudWatchLogGroupName:
+    Type: String
+    Description: CloudWatch Log Group name for Aurora MySQL General Log
+    Default: "/aws/rds/cluster/aurora-mysql-cluster/general"
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 256
+    Runtime: provided.al2023
+    Architectures:
+      - x86_64
+
+Resources:
+  MysqlConnectAuditFunction:
+    Type: AWS::Serverless::Function
+    Metadata:
+      BuildMethod: go1.x
+    Properties:
+      CodeUri: mysql-connect-audit/
+      Handler: bootstrap
+      Runtime: provided.al2023
+      Description: "Aurora MySQL接続ログを監視してSlackに通知するLambda関数"
+      Events:
+        CloudWatchLogsEvent:
+          Type: CloudWatchLogs
+          Properties:
+            LogGroupName: !Ref CloudWatchLogGroupName
+            FilterPattern: 'Connect'
+      Environment:
+        Variables:
+          SLACK_WEBHOOK_URL: !Ref SlackWebhookUrl
+          AURORA_CLUSTER_ID: !Ref AuroraClusterIdentifier
+          LOG_GROUP_NAME: !Ref CloudWatchLogGroupName
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:*"
+            - Effect: Allow
+              Action:
+                - rds:DescribeDBClusters
+                - rds:DescribeDBInstances
+              Resource: "*"
+
+Outputs:
+  MysqlConnectAuditFunction:
+    Description: "Aurora MySQL接続監視Lambda関数のARN"
+    Value: !GetAtt MysqlConnectAuditFunction.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-MysqlConnectAuditFunction"
+
+  MysqlConnectAuditFunctionIamRole:
+    Description: "Lambda関数のIAMロール"
+    Value: !GetAtt MysqlConnectAuditFunctionRole.Arn
+    Export:
+      Name: !Sub "${AWS::StackName}-MysqlConnectAuditFunctionRole"

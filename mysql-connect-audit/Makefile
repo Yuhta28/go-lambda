@@ -7,7 +7,7 @@ validate:
 	sam validate
 
 test:
-	cd db-connect-audit && go test -v ./...
+	cd mysql-connect-audit && go test -v ./...
 
 clean:
 	sam delete
