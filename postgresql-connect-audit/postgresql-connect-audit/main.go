@@ -171,7 +171,7 @@ func sendSlackNotification(connInfo ConnectionInfo) error {
 	// Slackメッセージを構築
 	message := SlackMessage{
 		Username:  "Aurora DB Monitor",
-		IconEmoji: ":database:",
+		IconEmoji: ":shark:",
 		Text:      "🔗 Aurora PostgreSQLへの新しい接続が検出されました",
 		Attachments: []Attachment{
 			{
