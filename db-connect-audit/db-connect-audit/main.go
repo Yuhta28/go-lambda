@@ -89,6 +89,16 @@ func parseConnectionLog(message string) *ConnectionInfo {
 		return nil
 	}
 
+	// システムユーザーを除外
+	systemUsers := []string{"rdsadmin", "rdshm"}
+	for _, sysUser := range systemUsers {
+		if strings.Contains(message, fmt.Sprintf(`identity="%s"`, sysUser)) ||
+		   strings.Contains(message, fmt.Sprintf(`user=%s`, sysUser)) ||
+		   strings.Contains(message, fmt.Sprintf(`%s@`, sysUser)) {
+			return nil
+		}
+	}
+
 	// 新しいログ形式に対応した正規表現
 	// パターン: "YYYY-MM-DD HH:MM:SS UTC:IP(PORT):USER@DATABASE:[PID]:LOG:  connection authorized: user=USER database=DATABASE ..."
 	logPattern := regexp.MustCompile(`(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})\s+UTC:([^:]+):\s*([^@]+)@([^:]+):\[(\d+)\]:LOG:\s+connection\s+(authorized|received):\s+user=(\w+)\s+database=(\w+)`)
