@@ -113,6 +113,10 @@ func parseConnectionLog(message string) *ConnectionInfo {
 			timestamp, err := time.Parse("2006-01-02 15:04:05", simpleMatches[1])
 			if err != nil {
 				timestamp = time.Now()
+			} else {
+				// UTCとして解析されたタイムスタンプをJSTに変換
+				jst, _ := time.LoadLocation("Asia/Tokyo")
+				timestamp = timestamp.In(jst)
 			}
 			
 			// IPアドレスから(PORT)部分を除去
@@ -137,6 +141,10 @@ func parseConnectionLog(message string) *ConnectionInfo {
 	if err != nil {
 		log.Printf("タイムスタンプの解析に失敗しました: %v", err)
 		timestamp = time.Now()
+	} else {
+		// UTCとして解析されたタイムスタンプをJSTに変換
+		jst, _ := time.LoadLocation("Asia/Tokyo")
+		timestamp = timestamp.In(jst)
 	}
 
 	// IPアドレスから(PORT)部分を除去
