@@ -137,14 +137,19 @@ func TestParseActualMySQLLogs(t *testing.T) {
 				t.Errorf("ClientIP: expected %s, got %s", tt.expected.ClientIP, result.ClientIP)
 			}
 
-			// タイムスタンプが正しく解析されているかチェック
-			expectedTime := "2025-09-07 06:41:11"
+			// タイムスタンプが正しく解析されてJSTに変換されているかチェック
+			expectedTime := "2025-09-07 15:41:11" // UTC 06:41:11 + 9時間 = JST 15:41:11
 			if tt.name == "Actual MySQL log without database" {
-				expectedTime = "2025-09-07 06:40:32"
+				expectedTime = "2025-09-07 15:40:32" // UTC 06:40:32 + 9時間 = JST 15:40:32
 			}
 			actualTime := result.Timestamp.Format("2006-01-02 15:04:05")
 			if actualTime != expectedTime {
 				t.Errorf("Timestamp: expected %s, got %s", expectedTime, actualTime)
+			}
+			
+			// タイムゾーンがJSTになっているかチェック
+			if result.Timestamp.Location().String() != "Asia/Tokyo" {
+				t.Errorf("Timezone: expected Asia/Tokyo, got %s", result.Timestamp.Location().String())
 			}
 		})
 	}

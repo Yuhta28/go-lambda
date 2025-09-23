@@ -110,6 +110,10 @@ func parseConnectionLog(message string) *ConnectionInfo {
 			log.Printf("タイムスタンプの解析に失敗しました: %v", err)
 			timestamp = time.Now()
 		}
+		
+		// UTCからJSTに変換
+		jst, _ := time.LoadLocation("Asia/Tokyo")
+		timestamp = timestamp.In(jst)
 
 		return &ConnectionInfo{
 			Timestamp:    timestamp,
@@ -130,6 +134,10 @@ func parseConnectionLog(message string) *ConnectionInfo {
 			log.Printf("タイムスタンプの解析に失敗しました: %v", err)
 			timestamp = time.Now()
 		}
+		
+		// UTCからJSTに変換
+		jst, _ := time.LoadLocation("Asia/Tokyo")
+		timestamp = timestamp.In(jst)
 
 		return &ConnectionInfo{
 			Timestamp:    timestamp,
@@ -150,6 +158,10 @@ func parseConnectionLog(message string) *ConnectionInfo {
 			log.Printf("タイムスタンプの解析に失敗しました: %v", err)
 			timestamp = time.Now()
 		}
+		
+		// UTCからJSTに変換
+		jst, _ := time.LoadLocation("Asia/Tokyo")
+		timestamp = timestamp.In(jst)
 
 		dbName := strings.TrimSpace(flexMatches[4])
 		if dbName == "" {
